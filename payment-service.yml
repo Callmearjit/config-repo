@@ -9,7 +9,7 @@ spring:
       import-check:
         enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/OMNI_Payment
+    url: jdbc:postgresql://localhost:5432/paymentDB
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
@@ -62,7 +62,7 @@ spring:
     activate:
       on-profile: docker
   datasource:
-    url: jdbc:postgresql://postgres:5432/OMNI_Payment
+    url: jdbc:postgresql://postgres:5432/paymentDB
   rabbitmq:
     host: rabbitmq
 
