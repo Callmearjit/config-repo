@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8084  # ← FIXED: Changed from 8080 to unique port (avoiding conflicts with recharge-service)
   forward-headers-strategy: framework
 
 spring:
