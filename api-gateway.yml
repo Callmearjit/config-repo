@@ -5,91 +5,135 @@ server:
 spring:
   main:
     web-application-type: reactive
+  
   cloud:
     gateway:
+      # ───────────────────────────────────────────────────────────────────
+      # Gateway Routes Configuration
+      # ───────────────────────────────────────────────────────────────────
       routes:
+        # ───────────────────────────────────────────────────────────────
+        # Auth Service Routes
+        # ───────────────────────────────────────────────────────────────
         - id: auth-service-docs
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/v3/api-docs,/auth/v3/api-docs/**
           filters:
             - RewritePath=/auth(?<segment>.*), $\{segment}
-        - id: user-service-docs
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/v3/api-docs,/users/v3/api-docs/**
-          filters:
-            - RewritePath=/users(?<segment>.*), $\{segment}
-        - id: payment-service-docs
-          uri: lb://PAYMENT-SERVICE
-          predicates:
-            - Path=/payments/v3/api-docs,/payments/v3/api-docs/**
-          filters:
-            - RewritePath=/payments(?<segment>.*), $\{segment}
-        - id: operator-service-docs
-          uri: lb://OPERATOR-SERVICE
-          predicates:
-            - Path=/operators/v3/api-docs,/operators/v3/api-docs/**
-          filters:
-            - RewritePath=/operators(?<segment>.*), $\{segment}
-        - id: recharge-service-docs
-          uri: lb://RECHARGE-SERVICE
-          predicates:
-            - Path=/recharges/v3/api-docs,/recharges/v3/api-docs/**
-          filters:
-            - RewritePath=/recharges(?<segment>.*), $\{segment}
-        - id: notification-service-docs
-          uri: lb://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/notifications/v3/api-docs,/notifications/v3/api-docs/**
-          filters:
-            - RewritePath=/notifications(?<segment>.*), $\{segment}
+        
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
           filters:
             - RewritePath=/auth(?<segment>.*), $\{segment}
+        
+        # ───────────────────────────────────────────────────────────────
+        # User Service Routes
+        # ───────────────────────────────────────────────────────────────
+        - id: user-service-docs
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/v3/api-docs,/users/v3/api-docs/**
+          filters:
+            - RewritePath=/users(?<segment>.*), $\{segment}
+        
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/users/**
           filters:
             - RewritePath=/users(?<segment>.*), $\{segment}
+        
+        # ───────────────────────────────────────────────────────────────
+        # Payment Service Routes
+        # ───────────────────────────────────────────────────────────────
+        - id: payment-service-docs
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/v3/api-docs,/payments/v3/api-docs/**
+          filters:
+            - RewritePath=/payments(?<segment>.*), $\{segment}
+        
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/payments/**
           filters:
             - RewritePath=/payments(?<segment>.*), $\{segment}
-        - id: notification-service
-          uri: lb://NOTIFICATION-SERVICE
+        
+        # ───────────────────────────────────────────────────────────────
+        # Operator Service Routes
+        # ───────────────────────────────────────────────────────────────
+        - id: operator-service-docs
+          uri: lb://OPERATOR-SERVICE
           predicates:
-            - Path=/notifications/**
+            - Path=/operators/v3/api-docs,/operators/v3/api-docs/**
           filters:
-            - RewritePath=/notifications(?<segment>.*), $\{segment}
-        - id: recharge-service
-          uri: lb://RECHARGE-SERVICE
-          predicates:
-            - Path=/recharges/**
-          filters:
-            - RewritePath=/recharges(?<segment>.*), $\{segment}
+            - RewritePath=/operators(?<segment>.*), $\{segment}
+        
         - id: operator-service
           uri: lb://OPERATOR-SERVICE
           predicates:
             - Path=/operators/**
           filters:
             - RewritePath=/operators(?<segment>.*), $\{segment}
+        
+        # ───────────────────────────────────────────────────────────────
+        # Recharge Service Routes
+        # ───────────────────────────────────────────────────────────────
+        - id: recharge-service-docs
+          uri: lb://RECHARGE-SERVICE
+          predicates:
+            - Path=/recharges/v3/api-docs,/recharges/v3/api-docs/**
+          filters:
+            - RewritePath=/recharges(?<segment>.*), $\{segment}
+        
+        - id: recharge-service
+          uri: lb://RECHARGE-SERVICE
+          predicates:
+            - Path=/recharges/**
+          filters:
+            - RewritePath=/recharges(?<segment>.*), $\{segment}
+        
+        # ───────────────────────────────────────────────────────────────
+        # Notification Service Routes
+        # ───────────────────────────────────────────────────────────────
+        - id: notification-service-docs
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notifications/v3/api-docs,/notifications/v3/api-docs/**
+          filters:
+            - RewritePath=/notifications(?<segment>.*), $\{segment}
+        
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notifications/**
+          filters:
+            - RewritePath=/notifications(?<segment>.*), $\{segment}
+  
   devtools:
     restart:
       enabled: false
 
+# ─────────────────────────────────────────────────────────────────────────
+# SpringDoc OpenAPI Configuration
+# This configures the aggregation of Swagger specs from all microservices
+# ─────────────────────────────────────────────────────────────────────────
 springdoc:
   swagger-ui:
+    # Basic swagger UI configuration
     config-url: /v3/api-docs/swagger-config
     url: /v3/api-docs
     path: /swagger-ui.html
     enabled: true
+    
+    # ─────────────────────────────────────────────────────────────────
+    # SERVICE AGGREGATION: List all microservices
+    # These URLs are rewritten by the gateway routes above
+    # ─────────────────────────────────────────────────────────────────
     disable-swagger-default-url: true
     urls-primary-name: auth-service
     urls:
@@ -105,10 +149,19 @@ springdoc:
         url: /recharges/v3/api-docs
       - name: notification-service
         url: /notifications/v3/api-docs
+    
+    # UX improvements
+    operations-sorter: method
+    tags-sorter: alpha
+  
+  # OpenAPI schema endpoint for the gateway
   api-docs:
     path: /v3/api-docs
     enabled: true
 
+# ─────────────────────────────────────────────────────────────────────────
+# Eureka Service Registry Configuration
+# ─────────────────────────────────────────────────────────────────────────
 eureka:
   client:
     register-with-eureka: true
@@ -116,14 +169,22 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+# ─────────────────────────────────────────────────────────────────────────
+# JWT Configuration
+# ─────────────────────────────────────────────────────────────────────────
 jwt:
   secret: ${JWT_SECRET:secretarjituttt123455667ksfbbfXY}
 
+# ─────────────────────────────────────────────────────────────────────────
+# Logging Configuration
+# ─────────────────────────────────────────────────────────────────────────
 logging:
   file:
-    name: logs/Api-Gateway.log
+    name: logs/api-gateway.log
   level:
     root: INFO
+    # Uncomment for debugging gateway routing
+    # org.springframework.cloud.gateway: DEBUG
 
 ---
 spring:
@@ -131,6 +192,7 @@ spring:
     activate:
       on-profile: docker
 
+# Docker profile uses internal service discovery names
 eureka:
   client:
     service-url:
