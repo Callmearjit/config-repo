@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8085  # ← FIXED: Changed from 8080 to unique port (avoiding conflicts with notification-service)
   forward-headers-strategy: framework
 
 spring:
