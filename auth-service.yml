@@ -1,7 +1,10 @@
 server:
+  port: 8082  # ← FIXED: Added unique port assignment
   forward-headers-strategy: framework
 
 spring:
+  application:
+    name: auth-service
   cloud:
     config:
       enabled: true
@@ -11,17 +14,34 @@ spring:
     restart:
       enabled: false
 
+# ─────────────────────────────────────────────────────────────────────────
+# SpringDoc Configuration for Swagger/OpenAPI
+# ─────────────────────────────────────────────────────────────────────────
 springdoc:
   swagger-ui:
+    # Primary configuration for swagger UI
+    path: /swagger-ui.html
     config-url: /v3/api-docs/swagger-config
     url: /v3/api-docs
-    path: /swagger-ui.html
-    disable-swagger-default-url: true
+    
+    # Point to API Gateway as the primary server
     servers:
       - url: http://localhost:8089
-        description: API Gateway
+        description: API Gateway (Recommended)
+      - url: http://localhost:8082
+        description: Direct Access (Auth Service)
+    
+    # Disable the default url and use configured urls
+    disable-swagger-default-url: true
+    
+    # Better UX in Swagger UI
+    operations-sorter: method
+    tags-sorter: alpha
+    
+  # OpenAPI schema endpoint
   api-docs:
     path: /v3/api-docs
+    enabled: true
 
 eureka:
   client:
