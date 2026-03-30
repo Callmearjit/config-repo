@@ -1,0 +1,75 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+spring:
+  cloud:
+    config:
+      enabled: true
+      import-check:
+        enabled: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+    serialization:
+      write-dates-as-timestamps: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  datasource:
+    url: jdbc:postgresql://localhost:5432/notificationDB
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+  devtools:
+    restart:
+      enabled: false
+
+springdoc:
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    path: /swagger-ui.html
+    servers:
+      - url: http://localhost:8089
+        description: API Gateway
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  file:
+    name: logs/notification-service.log
+  level:
+    root: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  rabbitmq:
+    host: rabbitmq
+  datasource:
+    url: jdbc:postgresql://postgres:5432/notificationDB
+    username: postgres
+    password: postgres
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka

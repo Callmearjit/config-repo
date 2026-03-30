@@ -1,0 +1,72 @@
+server:
+  port: 8083
+  forward-headers-strategy: framework
+
+spring:
+  cloud:
+    config:
+      enabled: true
+      import-check:
+        enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/OMNI_Payment
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  devtools:
+    restart:
+      enabled: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    servers:
+      - url: http://localhost:8089
+        description: Via API Gateway
+      - url: http://localhost:8083
+        description: Direct Access
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  file:
+    name: logs/payment-service.log
+  level:
+    root: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/OMNI_Payment
+  rabbitmq:
+    host: rabbitmq
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka

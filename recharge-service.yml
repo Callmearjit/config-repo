@@ -1,0 +1,78 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+spring:
+  cloud:
+    config:
+      enabled: true
+      import-check:
+        enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/OMNI_Recharge
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  devtools:
+    restart:
+      enabled: false
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentService:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+
+springdoc:
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    path: /swagger-ui.html
+    servers:
+      - url: http://localhost:8089
+        description: API Gateway
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  file:
+    name: logs/recharge-service.log
+  level:
+    root: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/OMNI_Recharge
+  rabbitmq:
+    host: rabbitmq
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
